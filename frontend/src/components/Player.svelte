@@ -1,6 +1,6 @@
 <script>
   import Icon from '@iconify/svelte';
-  import pacmanIcon from '@iconify-icons/twemoji/yellow-circle';
+  import pacmanIcon from '@iconify-icons/twemoji/face-screaming-in-fear';
   import { createEventDispatcher, onMount } from 'svelte';
 
   export let playerPosition;
@@ -13,6 +13,7 @@
     if (event.key === 'ArrowDown') move.y = 1;
     if (event.key === 'ArrowLeft') move.x = -1;
     if (event.key === 'ArrowRight') move.x = 1;
+    event.preventDefault();
     dispatch('move', move); // Dispatch the event within the component
   }
 
