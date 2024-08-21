@@ -17,9 +17,6 @@
     </p>
 </footer>
 <style>
-/* General Styles */
-
-
 header {
   background-color: #1b263b;
   padding: 20px;
@@ -69,27 +66,6 @@ footer p {
   color: white;
 }
 
-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #e94560;
-  color: #e0e1dd;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-button:hover {
-  background-color: #f05972;
-}
-
-button:active {
-  transform: scale(0.95);
-}
-
 footer p {
   margin: 5px 0;
 }
@@ -108,9 +84,5 @@ footer p {
     padding: 10px;
   }
 
-  button {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-  }
 }
 </style>
