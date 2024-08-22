@@ -3,6 +3,7 @@
   import Ghost from './Ghost.svelte';
   import Icon from '@iconify/svelte';
   import VirtualKeyboard from './VirtualKeyboard.svelte';
+  import VirtualJoystick from './VirtualJoystick.svelte';
   import houseWithGarden from '@iconify-icons/twemoji/house-with-garden';
   import Message from './Message.svelte';
   import { onMount } from 'svelte';
@@ -22,6 +23,7 @@
   let totalTime = 0; // Total time spent on all levels  
 
   let showKeyboard = false;
+  let showJoystick = false;
   let playerInitials = '';
 
   let playerPosition;
@@ -169,6 +171,7 @@
     if (ghostInterval) clearInterval(ghostInterval);
     ghostInterval = setInterval(moveGhosts, 1000 / currentLevel); // Move ghosts every second
     startTime = new Date();
+    showJoystick = true;
     return () => clearInterval(ghostInterval);
   }
 
@@ -184,88 +187,35 @@
     checkWinCondition();
     checkCollision();
   }
-
+ 
   function startNextLevel() {
     showNextLevelMessage = false;
     startLevel(currentLevel + 1);
   }  
 
-  function handleClick(event) {
-  // Access the clicked element
-  const target = event.target;
+  function handleVirtualKey(event) {
+        const { key } = event.detail;
+        const direction = { x: 0, y: 0 };
 
-  // Get the grid-row and grid-column styles
-  const gridRow = target.style.gridRowStart || target.style.gridRow;
-  const gridColumn = target.style.gridColumnStart || target.style.gridColumn;
+        switch (key) {
+            case 'ArrowUp':
+                direction.y = -1;
+                break;
+            case 'ArrowDown':
+                direction.y = 1;
+                break;
+            case 'ArrowLeft':
+                direction.x = -1;
+                break;
+            case 'ArrowRight':
+                direction.x = 1;
+                break;
+        }
 
-  // Extract the row and column indices (subtracting 1 to get zero-based index)
-  const y = parseInt(gridRow) - 1;
-  const x = parseInt(gridColumn) - 1;
-
-  console.log('Grid Coordinates:', x, y);
-
-  // Proceed with your logic to move the player if the cell is adjacent and open
-  const dx = Math.abs(x - playerPosition.x);
-  const dy = Math.abs(y - playerPosition.y);
-
-  // Allow move only if the clicked cell is adjacent and open
-  if ((dx === 1 && dy === 0 || dx === 0 && dy === 1) && maze[y][x] === 0) {
-    playerPosition = { x, y };
-    checkWinCondition();
-    checkCollision();
-  }
-}
-
-function handleTouchStart(event) {
-    // Access the touched element
-    const target = event.target;
-
-    // Get the grid-row and grid-column styles
-    const gridRow = target.style.gridRowStart || target.style.gridRow;
-    const gridColumn = target.style.gridColumnStart || target.style.gridColumn;
-
-    // Extract the row and column indices (subtracting 1 to get zero-based index)
-    const y = parseInt(gridRow) - 1;
-    const x = parseInt(gridColumn) - 1;
-
-    // Store the starting position
-    touchStart = { x, y };
-  }
-
-  function handleTouchMove(event) {
-    if (!touchStart) return;
-
-    // Access the touched element during move
-    const target = document.elementFromPoint(
-      event.touches[0].clientX,
-      event.touches[0].clientY
-    );
-
-    if (!target) return;
-
-    // Get the grid-row and grid-column styles
-    const gridRow = target.style.gridRowStart || target.style.gridRow;
-    const gridColumn = target.style.gridColumnStart || target.style.gridColumn;
-
-    // Extract the row and column indices (subtracting 1 to get zero-based index)
-    const y = parseInt(gridRow) - 1;
-    const x = parseInt(gridColumn) - 1;
-
-    const dx = Math.abs(x - touchStart.x);
-    const dy = Math.abs(y - touchStart.y);
-
-    // Allow move only if dragging to an adjacent cell
-    if ((dx === 1 && dy === 0 || dx === 0 && dy === 1) && maze[y][x] === 0) {
-      playerPosition = { x, y };
-      touchStart = { x, y }; // Update the start position for continued dragging
-      checkWinCondition();
-      checkCollision();
+        if (direction.x !== 0 || direction.y !== 0) {
+            handleMove({ detail: direction });
+        }
     }
-  }
-
-  function handleTouchEnd() {
-    touchStart = null; // Reset on touch end
-  }
   
   function moveGhosts() {
     const directions = [
@@ -339,10 +289,12 @@ function handleTouchStart(event) {
       clearInterval(ghostInterval); // Stop ghosts when level is complete
       if (currentLevel < mazes.length) {
         showNextLevelMessage = true;
-        currentMessage = 'Level cleared! Ready for the next one?';
+        showJoystick = false;
+        currentMessage = 'Are you ready to go on?';
       } else {
         showCongratulations = true;
         showKeyboard = true; // Show the keyboard for entering initials
+        showJoystick = false;
         currentMessage = 'Want to go for the hall of fame?';
         maze = null;
       }
@@ -353,6 +305,7 @@ function handleTouchStart(event) {
     ghosts.forEach(ghost => {
       if (playerPosition.x === ghost.position.x && playerPosition.y === ghost.position.y) {
         showGameOverMessage = true;
+        showJoystick = false;
         currentMessage = 'You were caught by a ghost! Game over.';
       }
     });
@@ -400,7 +353,7 @@ function handleTouchStart(event) {
   {#if maze && !showNextLevelMessage && !showErrorMessage && !showGameOverMessage && !showCongratulations}
     <h2 class="level-denomination">Level {currentLevel} of {mazes.length}</h2>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="level" on:click={handleClick} on:touchstart={handleTouchStart} on:touchmove={handleTouchMove} on:touchend={handleTouchEnd} role="grid" tabindex="0" aria-label="Maze grid, use arrow keys to move">
+    <div class="level" role="grid" tabindex="0" aria-label="Maze grid, use arrow keys to move">
       {#each maze as row, y}
         {#each row as cell, x}
           <div class="cell {cell === 1 ? 'wall' : ''}" style="grid-row: {y + 1}; grid-column: {x + 1};" role="gridcell" aria-label={cell === 1 ? 'Wall' : 'Empty cell'}></div>
@@ -411,14 +364,18 @@ function handleTouchStart(event) {
         <Ghost position={ghost.position} />
       {/each}
       <div class="target" style="grid-row: {targetPosition.y + 1}; grid-column: {targetPosition.x + 1};">
-        <Icon icon={houseWithGarden} width="20" height="20" />
+        <Icon icon={houseWithGarden} width="90%" height="90%" />
       </div>
     </div>
   {/if}
 
+  {#if showJoystick}
+    <VirtualJoystick on:key={handleVirtualKey} />
+  {/if}
+  
   {#if showNextLevelMessage}
-    <Message type="info" message={currentMessage} />
-    <button class="next-level-button" on:click={startNextLevel} bind:this={nextLevelButton}>Start Next Level</button>
+    <Message type="level" message={currentMessage} />
+    <button class="next-level-button" on:click={startNextLevel} bind:this={nextLevelButton}>Next Level</button>
   {/if}
 
   {#if showCongratulations}
@@ -505,26 +462,28 @@ h2.level-denomination {
     width: 100%;
     padding: 10px 0;
   }
+
 }
 
 .level {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   grid-template-rows: repeat(20, 1fr);
-  width: 400px;
-  height: 400px;
-  border: 2px solid black;
+  width: 350px;
+  height: 350px;
+  /*border: 2px solid black;*/
   position: relative;
 }
 
 .cell {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
   box-sizing: border-box; /* Ensures padding and borders don't affect size */
 }
 
 .wall {
-  background-color: black;
+  background-color: #3b263b;
+
 }
 
 .target {
@@ -534,10 +493,10 @@ h2.level-denomination {
 
 .next-level-button,
 .reset-button {
-  margin-top: 70px;
-  margin-bottom: 50px;
-  background-color: #f05972;
-  color: #ffffff;
+  margin-top: 50px;
+  margin-bottom: 0px;
+  background-color: #ca3049;
+  color: #e0e1dd;
   padding: 12px 24px;
   font-size: 1.2rem;
   font-weight: bold;
@@ -551,8 +510,8 @@ h2.level-denomination {
 }
 
 .next-level-button {
-  background-color: #0b5d0b; 
-  margin-top: 60px;
+  background-color: #1e4f1e; 
+  margin-top: 30px;
   margin-bottom: 0px;
 }
 
@@ -601,25 +560,13 @@ h2.level-denomination {
   border-bottom: 2px solid #e0e1dd;
   }
 
-  /*
-.leaderboard tr:nth-child(even) {
-  background-color: #2e3b4e;
-}
-
-.leaderboard tr:hover {
-  background-color: #34495e;
-}
-*/
-
 .leaderboard tr:first-child td {
   color: #ffd700; /* Golden color */
   text-shadow: 
     0 0 5px #ffd700,  /* Inner glow */
     0 0 10px #ffd700, /* Slightly outer glow */
     0 0 20px #ffd700, /* Further outer glow */
-    0 0 40px #ff8c00, /* More outer glow in a different shade */
-    0 0 60px #ff8c00, /* Outer glow with more spread */
-    0 0 80px #ff8c00; /* Stronger outer glow */
+    0 0 40px #ff8c00;
   font-weight: bold;
 }
 
@@ -630,9 +577,7 @@ h2.level-denomination {
     0 0 5px #c0c0c0,  /* Inner glow */
     0 0 10px #c0c0c0, /* Slightly outer glow */
     0 0 20px #ffffff, /* Further outer glow with a lighter shade */
-    0 0 40px #ffffff, /* More outer glow in white */
-    0 0 60px #d9d9d9, /* Outer glow with more spread in a light silver */
-    0 0 80px #d9d9d9; /* Stronger outer glow */
+    0 0 40px #ffffff;
   font-weight: bold;
 }
 
@@ -643,9 +588,7 @@ h2.level-denomination {
     0 0 5px #cd7f32,  /* Inner glow */
     0 0 10px #cd7f32, /* Slightly outer glow */
     0 0 20px #b87333, /* Further outer glow with a darker bronze shade */
-    0 0 40px #b87333, /* More outer glow */
-    0 0 60px #a0522d, /* Outer glow with more spread in a deeper bronze */
-    0 0 80px #a0522d; /* Stronger outer glow */
+    0 0 40px #b87333;
   font-weight: bold;
 }
 

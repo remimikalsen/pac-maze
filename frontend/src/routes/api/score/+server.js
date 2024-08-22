@@ -5,7 +5,7 @@ export const POST = async ({ request }) => {
     try {
         const { initials, time } = await request.json();
 
-        const response = await fetch('http://pacmaze_backend:3000/score', {
+        const response = await fetch('http://localhost:3000/score', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -17,9 +17,9 @@ export const POST = async ({ request }) => {
             throw new Error('Failed to store score');
         }
 
-        const result = await response.json();
+        /* const result = await response.json();*/
 
-        return json(result);
+        return json({ message: "OK" }, { status: 200 });
     } catch (error) {
         return json({ error: error.message }, { status: 500 });
     }

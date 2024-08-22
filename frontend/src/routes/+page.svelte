@@ -10,7 +10,7 @@
 </main>
 <footer>
     <p>
-      Brought to you by the amazing <a href="https://theawesomegarage.com">TheAwesomeGarage.com</a>
+      Brought to you by <a href="https://theawesomegarage.com">TheAwesomeGarage.com</a>
     </p>
     <p>
       View the source code on <a href="https://github.com/remimikalsen/pacmaze">GitHub</a>

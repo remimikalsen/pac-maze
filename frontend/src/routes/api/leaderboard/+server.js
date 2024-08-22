@@ -4,7 +4,7 @@ import { json } from '@sveltejs/kit';
 export const GET = async () => {
 
     try {
-        const response = await fetch('http://pacmaze_backend:3000/leaderboard');
+        const response = await fetch('http://localhost:3000/leaderboard');
 
         if (!response.ok) {
             throw new Error('Failed to fetch leaderboard');

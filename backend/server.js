@@ -2,9 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
 const app = express();
-const db = new sqlite3.Database(':memory:');
+const dbPath = path.resolve(__dirname, 'leaderboard.db');
+const db = new sqlite3.Database(dbPath);
 
 app.use(cors());
 app.use(bodyParser.json());

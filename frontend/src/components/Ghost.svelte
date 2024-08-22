@@ -17,7 +17,7 @@
     box-sizing: border-box;
   "
 >
-  <Icon icon={ghostIcon} width="20" height="20" />
+  <Icon icon={ghostIcon} width="90%" height="90%" />
 </div>
 
 <style>

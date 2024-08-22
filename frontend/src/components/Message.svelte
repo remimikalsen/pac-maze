@@ -1,6 +1,6 @@
 <!-- Message.svelte -->
 <script>
-    export let type = 'info'; // 'winner', 'info', 'error', 'gameover'
+    export let type = 'info'; // 'winner', 'level', 'info', 'error', 'gameover'
     export let message = '';
   </script>
   
@@ -8,7 +8,13 @@
     {#if type === 'winner'}
       <p class="congrats">Congratulations!</p>
     {/if}
-    <p>{message}</p>
+    {#if type === 'level'}
+      <p class="level">Level cleared!</p>
+      <p class="level-info">{message}</p>
+    {/if}
+    {#if type !== 'level'}
+      <p>{message}</p>
+    {/if}
   </div>
   
   <style>
@@ -43,13 +49,31 @@
         0 0 5px #ffd700,  /* Inner glow */
         0 0 10px #ffd700, /* Slightly outer glow */
         0 0 20px #ffd700, /* Further outer glow */
-        0 0 40px #ff8c00, /* More outer glow in a different shade */
-        0 0 60px #ff8c00, /* Outer glow with more spread */
-        0 0 80px #ff8c00; /* Stronger outer glow */
+        0 0 40px #ff8c00;
+    }
+    
+    .message.level p.level {
+      margin-bottom: 15px;
+      font-size: 120%;
+      color: #c0c0c0; /* Silver color */
+      text-shadow: 
+        0 0 20px #ffffff, /* Further outer glow with a lighter shade */
+        0 0 40px #ffffff;
+      font-weight: bold;        
     }
     
     .message p {
       margin: 0;
     }
+
+    .message p.level-info {
+      margin: 0;
+      margin-top: 30px;
+      margin-bottom: -10px;
+      font-size: 80%;
+      font-weight: normal;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
   </style>
   

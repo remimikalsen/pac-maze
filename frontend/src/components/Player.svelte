@@ -24,7 +24,7 @@
 </script>
 
 <div style="grid-row: {playerPosition.y + 1}; grid-column: {playerPosition.x + 1}; display: flex; justify-content: center; align-items: center;">
-  <Icon icon={pacmanIcon} width="20" height="20" />
+  <Icon icon={pacmanIcon} width="90%" height="90%" />
 </div>
 
 <style>
