@@ -360,7 +360,7 @@ function handleTouchStart(event) {
 
 
   async function storeScore(initials, time) {
-    await fetch('http://localhost:3000/score', {
+    await fetch('/api/score', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -370,7 +370,7 @@ function handleTouchStart(event) {
   }
 
   async function fetchLeaderboard() {
-    const response = await fetch('http://localhost:3000/leaderboard');
+    const response = await fetch('/api/leaderboard');
     return await response.json();
   }
 

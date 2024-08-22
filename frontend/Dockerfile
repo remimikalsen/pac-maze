@@ -1,32 +1,27 @@
-# Stage 1: Build the SvelteKit app
-FROM node:18 AS build
+# Use the official Node.js 20 image as a base
+FROM node:20
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
+# Copy the package.json and package-lock.json (if you have one)
 COPY package*.json ./
 
-# Install the dependencies
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application files
+# Copy the rest of your application code
 COPY . .
 
 # Build the SvelteKit app
 RUN npm run build
 
-# Stage 2: Serve the app using a lightweight web server
-FROM nginx:alpine AS serve
+# Expose the port the app will run on
+EXPOSE 3000
 
-# Copy the built app from the previous stage
-COPY --from=build /app/build /usr/share/nginx/html
+# Set environment variables if necessary
+ENV NODE_ENV=production
 
-# Copy a custom Nginx configuration (optional)
-COPY nginx.conf /etc/nginx/nginx.conf
+# Command to start the Node.js server
+CMD ["node", "build"]
 
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
