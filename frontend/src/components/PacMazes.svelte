@@ -19,8 +19,8 @@
   let currentLevel = 1;
   let leaderboard = [];
   let startTime; // Start time of the level
-  let levelTime = 0; // Time spent on the current level
-  let totalTime = 0; // Total time spent on all levels  
+  let levelTime = 0.0; // Time spent on the current level
+  let totalTime = 0.0; // Total time spent on all levels  
 
   let showKeyboard = false;
   let playerInitials = '';
@@ -282,7 +282,7 @@
     if (playerPosition.x === targetPosition.x && playerPosition.y === targetPosition.y) {
 
       showVirtualJoystick = false;
-      levelTime = Math.floor((new Date() - startTime) / 1000); // Calculate level time in seconds
+      levelTime = (new Date() - startTime) / 1000; // Calculate level time
       totalTime += levelTime; // Add level time to total time
 
       clearInterval(ghostInterval); // Stop ghosts when level is complete
@@ -411,7 +411,7 @@
           <tr>
             <td class="rank">{i + 1}.</td>
             <td class="initials">{initials}</td>
-            <td class="time">{time} s</td>
+            <td class="time">{time.toFixed(2)} s</td>
           </tr>
         {/each}
       </tbody>

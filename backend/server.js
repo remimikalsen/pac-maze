@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 // Create a table for the leaderboard
 db.serialize(() => {
-  db.run('CREATE TABLE leaderboard (initials TEXT, time INTEGER)');
+  db.run(`CREATE TABLE IF NOT EXISTS leaderboard (initials TEXT, time REAL)`);
 });
 
 // Endpoint to submit a score
