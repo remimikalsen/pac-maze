@@ -17,4 +17,4 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./pacmaze_db:/app
+      - ./pacmaze_db:/app/data

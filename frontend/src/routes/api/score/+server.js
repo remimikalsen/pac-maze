@@ -5,7 +5,7 @@ export const POST = async ({ request }) => {
     try {
         const { initials, time } = await request.json();
 
-        const response = await fetch('http://localhost:3000/score', {
+        const response = await fetch('http://pacmaze_backend:3000/score', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

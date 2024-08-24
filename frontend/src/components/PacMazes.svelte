@@ -9,12 +9,12 @@
   import { onMount } from 'svelte';
 
 
-
   let showNextLevelMessage = false;
   let nextLevelButton;
   let showCongratulations = false;
   let showErrorMessage = false;
   let showGameOverMessage = false;
+  let showVirtualJoystick = false;
   let currentMessage = '';
   let currentLevel = 1;
   let leaderboard = [];
@@ -23,7 +23,6 @@
   let totalTime = 0; // Total time spent on all levels  
 
   let showKeyboard = false;
-  let showJoystick = false;
   let playerInitials = '';
 
   let playerPosition;
@@ -166,12 +165,11 @@
     targetPosition = { x: gridSize - 2, y: gridSize - 2 };
 
     currentLevel = level;
-
+    showVirtualJoystick = true;
     // Clear any existing interval before starting a new one
     if (ghostInterval) clearInterval(ghostInterval);
     ghostInterval = setInterval(moveGhosts, 1000 / currentLevel); // Move ghosts every second
     startTime = new Date();
-    showJoystick = true;
     return () => clearInterval(ghostInterval);
   }
 
@@ -283,18 +281,17 @@
   function checkWinCondition() {
     if (playerPosition.x === targetPosition.x && playerPosition.y === targetPosition.y) {
 
+      showVirtualJoystick = false;
       levelTime = Math.floor((new Date() - startTime) / 1000); // Calculate level time in seconds
       totalTime += levelTime; // Add level time to total time
 
       clearInterval(ghostInterval); // Stop ghosts when level is complete
       if (currentLevel < mazes.length) {
         showNextLevelMessage = true;
-        showJoystick = false;
         currentMessage = 'Are you ready to go on?';
       } else {
         showCongratulations = true;
         showKeyboard = true; // Show the keyboard for entering initials
-        showJoystick = false;
         currentMessage = 'Want to go for the hall of fame?';
         maze = null;
       }
@@ -305,7 +302,7 @@
     ghosts.forEach(ghost => {
       if (playerPosition.x === ghost.position.x && playerPosition.y === ghost.position.y) {
         showGameOverMessage = true;
-        showJoystick = false;
+        showVirtualJoystick = false;
         currentMessage = 'You were caught by a ghost! Game over.';
       }
     });
@@ -369,10 +366,10 @@
     </div>
   {/if}
 
-  {#if showJoystick}
+  {#if showVirtualJoystick}
     <VirtualJoystick on:key={handleVirtualKey} />
   {/if}
-  
+
   {#if showNextLevelMessage}
     <Message type="level" message={currentMessage} />
     <button class="next-level-button" on:click={startNextLevel} bind:this={nextLevelButton}>Next Level</button>
@@ -507,6 +504,10 @@ h2.level-denomination {
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+        user-select: none;  /* Prevent text selection */
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -moz-user-select: none;
 }
 
 .next-level-button {
