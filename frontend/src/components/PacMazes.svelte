@@ -292,7 +292,7 @@
       } else {
         showCongratulations = true;
         showKeyboard = true; // Show the keyboard for entering initials
-        currentMessage = 'Want to go for the hall of fame?';
+        currentMessage = totalTime.toFixed(2) + 's. Want to go for the hall of fame?';
         maze = null;
       }
     }
